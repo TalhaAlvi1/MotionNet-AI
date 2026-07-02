@@ -41,3 +41,16 @@ flowchart TD
     style C fill:#ffe66d,stroke:#f59f00,color:#000
     style E fill:#4ecdc4,stroke:#0b5e5e,color:#fff
     style H fill:#a8e6cf,stroke:#2d8f6a,color:#000
+
+## 🚀 Features
+
+| **Feature** | **Description** |
+|-------------|-----------------|
+| 🎯 **Pose Tracking** | 33 body landmarks with real‑time overlay |
+| ✋ **Hand Detection** | 21 hand landmarks per hand |
+| ⚡ **Conditional Processing** | Hands processed only when weapon stance is detected |
+| ⏱️ **Time Counter** | Frame‑accurate timestamp overlay |
+| 📋 **Event Logging** | JSON export with frame numbers & timestamps |
+| 📊 **Performance Stats** | Pose detection rate, event count, and more |
+| 🎨 **Visual Overlays** | Color‑coded pose and hand skeletons |
+| 📤 **Export Ready** | Output video + JSON results in one click |
