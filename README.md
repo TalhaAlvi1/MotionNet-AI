@@ -114,6 +114,10 @@ MotionNet-Video-Analyzer/
 - Developed and tested on 3640×2048 @ 29fps footage; runtime scales with resolution and total frame count, since pose detection runs on every single frame.
 - Designed for Colab/Jupyter workflows — no CLI or packaging included.
 
+## Demo
+
+https://github.com/user-attachments/assets/2a849dbf-cd65-4bc3-8a51-d7737b2b38d3
+
 ## 📄 License
 
 MIT — see [`LICENSE`](LICENSE) for details.
