@@ -1,41 +1,36 @@
-# MotionNet-AI
 <div align="center">
-  <img src="https://img.shields.io/badge/MediaPipe-10.14.0-blue.svg" alt="MediaPipe Version">
-  <img src="https://img.shields.io/badge/OpenCV-4.8.0-green.svg" alt="OpenCV Version">
-  <img src="https://img.shields.io/badge/Python-3.8+-yellow.svg" alt="Python Version">
-  <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License">
-  <img src="https://img.shields.io/badge/Colab-Open%20Now-orange.svg?logo=google-colab" alt="Open In Colab">
+
+# 🎯 MotionNet Video Analyzer
+
+**Real-time pose & conditional hand tracking, built on MediaPipe + OpenCV**
+
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10.14-00A98F?style=flat-square&logo=google&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-headless-5C3EE8?style=flat-square&logo=opencv&logoColor=white)
+![Colab](https://img.shields.io/badge/Run%20on-Colab-F9AB00?style=flat-square&logo=googlecolab&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
+
 </div>
-
-<br>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/yourusername/MotionNet-Video-Analyzer/main/assets/demo.gif" alt="MotionNet Demo" width="600">
-</p>
-
-<h1 align="center">🎯 MotionNet Video Analyzer</h1>
-
-<h3 align="center">Real‑time Human Pose & Hand Tracking with Weapon‑Stance Detection</h3>
-
-<p align="center">
-  <em>Powered by MediaPipe • Built for Security & Motion Analysis</em>
-</p>
 
 ---
 
-## 📊 System Architecture
+## 📖 Overview
+
+MotionNet processes a video frame-by-frame, tracks full-body pose on every frame, and **conditionally** activates hand tracking only when a specific wrist/arm stance pattern is detected — keeping compute low on long footage. Every triggered frame is logged with its timestamp, and the annotated video plus a JSON event report are saved as output.
+
+## 🧩 How It Works
 
 ```mermaid
-flowchart TD
-    A[📹 Input Video] --> B[MediaPipe Pose]
-    B --> C{Weapon Stance Detected?}
-    C -->|❌ No| D[📝 Log Pose Only]
-    C -->|✅ Yes| E[✋ MediaPipe Hands]
-    E --> F[🎯 Log Event + Timestamp]
-    D --> G[🎨 Overlay Visuals]
+flowchart LR
+    A[📹 Input Video] --> B[MediaPipe Pose<br/>every frame]
+    B --> C{Stance heuristic<br/>triggered?}
+    C -- No --> D[Overlay pose only]
+    C -- Yes --> E[MediaPipe Hands<br/>21 landmarks/hand]
+    E --> F[Log frame + timestamp]
+    D --> G[Write frame + time counter]
     F --> G
-    G --> H[📤 Output Video + JSON]
-    
+    G --> H[📤 output.mp4 + results.json]
+
     style A fill:#ff6b6b,stroke:#c92a2a,color:#fff
     style B fill:#4ecdc4,stroke:#0b5e5e,color:#fff
     style C fill:#ffe66d,stroke:#f59f00,color:#000
@@ -43,27 +38,88 @@ flowchart TD
     style H fill:#a8e6cf,stroke:#2d8f6a,color:#000
 ```
 
-## 🚀 Features
+## ✨ Features
 
-| Feature | Description |
-| :--- | :--- |
-| **🎯 Pose Tracking** | Tracks 33 body landmarks with real‑time overlay using MediaPipe Pose. |
-| **✋ Hand Detection** | Detects and overlays 21 hand landmarks per hand when a weapon stance is found. |
-| **⚡ Conditional Processing** | Runs intensive hand detection **only** when a potential weapon stance is detected, saving computation. |
-| **⏱️ Time Counter** | Displays a frame‑accurate timestamp overlay on the output video. |
-| **📋 Event Logging** | Exports a detailed `results.json` file with frame numbers and timestamps of every weapon‑stance event. |
-| **📊 Performance Stats** | Provides summary statistics after processing, including pose detection rate and total event count. |
+| Feature | Detail |
+|---|---|
+| 🦴 **Full-video pose tracking** | 33-point body landmarks drawn on every frame via `MediaPipe Pose` |
+| ⚡ **Conditional hand tracking** | 21-point hand landmarks computed only when the stance heuristic fires — saves compute on frames that don't need it |
+| 🎯 **Stance heuristic** | Flags frames where both wrists are forward, raised above hip level, and close together (`is_weapon_stance()` — thresholds are tunable) |
+| ⏱️ **Timestamp overlay** | Frame-accurate `MM:SS:ms` counter burned into every output frame |
+| 📋 **Event logging** | `results.json` records every triggered frame's number + timestamp |
+| 📊 **Run summary** | Console output with total frames, pose detection rate, hand detection count, and event count |
 
+## 🛠️ Requirements
 
-## 📈 Detection Performance
+| Dependency | Version |
+|---|---|
+| Python | 3.8+ |
+| mediapipe | 0.10.14 |
+| opencv-python-headless | latest |
+| numpy | latest |
+| gdown | latest *(only if pulling source video from Google Drive)* |
 
-| Metric | Rate |
-| :--- | :--- |
-| **Pose Detection** | ████████████████████████████████████████ 95.1% |
-| **Hand Detection** | ██████████████████████████████████ 84.3% |
-| **Weapon Events** | ████████████████████████████████ 78.6% |
-| **False Positives** | ██ 5.2% |
+## 🚀 Setup
 
-##  🔍 Detection Logic Visualization
-<div align="center"> <img src="https://quickchart.io/chart?c=%7B%22type%22%3A%22radar%22%2C%22data%22%3A%7B%22labels%22%3A%5B%22Forward%20Arms%22%2C%22Wrists%20Raised%22%2C%22Hands%20Together%22%2C%22Shoulder%20Stability%22%2C%22Hip%20Alignment%22%5D%2C%22datasets%22%3A%5B%7B%22label%22%3A%22Weapon%20Stance%22%2C%22data%22%3A%5B95%2C88%2C92%2C85%2C78%5D%2C%22backgroundColor%22%3A%22rgba(255%2C99%2C132%2C0.2)%22%2C%22borderColor%22%3A%22%23ff6384%22%7D%2C%7B%22label%22%3A%22Normal%20Posture%22%2C%22data%22%3A%5B35%2C22%2C18%2C90%2C92%5D%2C%22backgroundColor%22%3A%22rgba(78%2C205%2C196%2C0.2)%22%2C%22borderColor%22%3A%22%234ecdc4%22%7D%5D%7D%2C%22options%22%3A%7B%22title%22%3A%7B%22display%22%3Atrue%2C%22text%22%3A%22Weapon%20Stance%20Detection%20Metrics%22%2C%22fontSize%22%3A16%7D%2C%22legend%22%3A%7B%22display%22%3Atrue%2C%22position%22%3A%22bottom%22%7D%2C%22scale%22%3A%7B%22ticks%22%3A%7B%22beginAtZero%22%3Atrue%2C%22max%22%3A100%7D%7D%7D%7D" alt="Detection Metrics Radar Chart" width="600"> </div>
+```bash
+pip install mediapipe==0.10.14 opencv-python-headless numpy gdown
+```
 
+## ▶️ Usage
+
+1. **Open** `Video_Analyzer.ipynb` in Jupyter or Google Colab.
+2. **Provide input video** — point to a local file path, or set your Google Drive file ID for the `gdown` cell to fetch it.
+3. **Run all cells.** Live progress (`%` complete) prints as frames process.
+4. **Collect outputs** from the working directory:
+   - `output.mp4` — original video with pose/hand overlays + timestamp
+   - `results.json` — detection stats and full list of triggered events
+
+## 📦 Output Format
+
+```json
+{
+  "total": 29278,
+  "pose": 27850,
+  "hands": 412,
+  "weapon_events": [
+    { "frame": 1503, "time": "00:51:800" }
+  ]
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `total` | Frames processed |
+| `pose` | Frames with a valid pose detection |
+| `hands` | Frames where hand tracking ran (stance triggered) |
+| `weapon_events` | List of `{frame, time}` for every triggered frame |
+
+## 📁 Project Structure
+
+```
+MotionNet-Video-Analyzer/
+├── Video_Analyzer.ipynb    # Main notebook — analyzer class + run cell
+├── sample/                 # Optional: short demo output clip
+├── README.md
+└── LICENSE
+```
+
+## ⚙️ Tuning
+
+- `model_complexity`, `min_detection_confidence`, `min_tracking_confidence` in `VideoAnalyzer.__init__` — first knobs to adjust for accuracy vs. speed.
+- The stance heuristic in `is_weapon_stance()` is a simple geometric rule on wrist/shoulder/hip landmark positions — a starting point for experimentation, not a validated classifier. Treat `weapon_events` as candidates to review manually.
+
+## 📝 Notes
+
+- Developed and tested on 3640×2048 @ 29fps footage; runtime scales with resolution and total frame count, since pose detection runs on every single frame.
+- Designed for Colab/Jupyter workflows — no CLI or packaging included.
+
+## 📄 License
+
+MIT — see [`LICENSE`](LICENSE) for details.
+
+---
+
+<div align="center">
+<sub>Built with MediaPipe & OpenCV</sub>
+</div>
