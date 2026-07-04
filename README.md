@@ -120,10 +120,6 @@ https://github.com/user-attachments/assets/2a849dbf-cd65-4bc3-8a51-d7737b2b38d3
 
 ## 📄 License
 
-MIT — see [`LICENSE`](LICENSE) for details.
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 
 ---
-
-<div align="center">
-<sub>Built with MediaPipe & OpenCV</sub>
-</div>
